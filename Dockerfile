@@ -1,18 +1,30 @@
-FROM node:22-slim
+FROM node:24-slim
 
 WORKDIR /starter
-ENV NODE_ENV development
 
-COPY .env.example /starter/.env.example
-COPY . /starter
+# 设置环境变量
+ENV NODE_ENV=production
 
-RUN npm install -g pm2 && \
-    if [ "$NODE_ENV" = "production" ]; then \
-        npm install --omit=dev; \
-    else \
-        npm install; \
-    fi
+# 复制 package 文件（利用 Docker 缓存层）
+COPY package*.json ./
 
-CMD ["pm2-runtime","app.js"]
+# 安装依赖
+RUN npm ci --omit=dev && \
+    npm install -g pm2
+
+# 复制应用代码
+COPY . .
+
+# 构建 Sass
+RUN npm run scss || true
+
+# 创建非 root 用户
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /starter
+
+USER appuser
 
 EXPOSE 8080
+
+# 使用 pm2 运行应用
+CMD ["pm2-runtime", "app.js"]

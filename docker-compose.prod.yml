@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  web:
+    image: ${REGISTRY_URL:-192.168.1.100:5000}/hackathon-starter:${TAG:-latest}
+    container_name: hackathon-starter
+    restart: unless-stopped
+    ports:
+      - '${PORT:-8080}:8080'
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/hackathon}
+      - BASE_URL=${BASE_URL:-http://localhost:8080}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SITE_CONTACT_EMAIL=${SITE_CONTACT_EMAIL}
+      - TRANSACTION_EMAIL=${TRANSACTION_EMAIL}
+    volumes:
+      - ./uploads:/starter/uploads
+      - ./logs:/starter/logs
+    depends_on:
+      - mongo
+    networks:
+      - hackathon-network
+
+  mongo:
+    image: mongo:7
+    container_name: hackathon-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - hackathon-network
+    environment:
+      - MONGO_INITDB_DATABASE=hackathon
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  hackathon-network:
+    driver: bridge
+
