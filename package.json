@@ -12,13 +12,17 @@
     "Yashar Fakhari (https://github.com/YasharF)"
   ],
   "scripts": {
-    "clean-install": "node -e \"fs.rmSync('node_modules', { recursive: true, force: true }); fs.rmSync('package-lock.json', { force: true }); fs.rmSync('tmp', { recursive: true, force: true });\" && npm install",
+    "clean-install": "node -e \"fs.rmSync('node_modules', { recursive: true, force: true }); fs.rmSync('package-lock.json', { force: true }); fs.rmSync('pnpm-lock.yaml', { force: true }); fs.rmSync('tmp', { recursive: true, force: true });\" && npm install",
+    "clean-install:pnpm": "node -e \"fs.rmSync('node_modules', { recursive: true, force: true }); fs.rmSync('package-lock.json', { force: true }); fs.rmSync('pnpm-lock.yaml', { force: true }); fs.rmSync('tmp', { recursive: true, force: true });\" && pnpm install",
     "lint": "eslint \"**/*.js\" --fix && prettier . --write",
     "lint-check": "eslint \"**/*.js\" && prettier . --check",
     "postinstall": "patch-package && npm run scss",
     "prepare": "node -e \"if(process.env.NODE_ENV!=='production'){require('child_process').execSync('husky',{stdio:'inherit'})}\"",
     "scss": "sass --no-source-map --silence-deprecation=import --quiet-deps --load-path=./ --update ./public/css:./public/css",
+    "scss:watch": "sass --no-source-map --silence-deprecation=import --quiet-deps --load-path=./ --watch ./public/css:./public/css",
     "start": "npm run scss && node app.js",
+    "dev": "pnpm run scss && nodemon app.js",
+    "dev:watch": "concurrently \"pnpm run scss:watch\" \"nodemon app.js\"",
     "test": "c8 --temp-directory=tmp/coverage --reporter=html --reports-dir=tmp/coverage mocha --timeout=60000 --exit --exclude \"test/*links.test.js\"",
     "test:e2e:live": "playwright test --config=test/playwright.config.js --project=chromium",
     "test:e2e:replay": "playwright test --config=test/playwright.config.js --project=chromium-replay",
@@ -100,6 +104,8 @@
     "husky": "^9.1.7",
     "mocha": "^11.7.5",
     "mongodb-memory-server": "^10.3.0",
+    "nodemon": "^3.1.7",
+    "concurrently": "^9.1.2",
     "prettier": "^3.7.2",
     "sinon": "^21.0.0",
     "supertest": "^7.1.4"

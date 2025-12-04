@@ -1,0 +1,25 @@
+{
+  "watch": [
+    "app.js",
+    "controllers",
+    "models",
+    "config",
+    "views"
+  ],
+  "ext": "js,json,pug",
+  "ignore": [
+    "node_modules",
+    "test",
+    "tmp",
+    "public",
+    "*.test.js",
+    ".git"
+  ],
+  "exec": "node app.js",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "delay": 500,
+  "verbose": true
+}
+
